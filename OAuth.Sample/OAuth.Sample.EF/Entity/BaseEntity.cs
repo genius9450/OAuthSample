@@ -15,14 +15,15 @@ namespace OAuth.Sample.EF.Entity
         public int Id { get; set; }
 
         /// <summary>
-        /// 建立時間(utc)
+        /// 建立時間
         /// </summary>
-        public DateTime CreateDateTimeUtc { get; set; } = DateTime.UtcNow;
+        public DateTime CreateDateTime { get; set; } = DateTime.Now;
 
         /// <summary>
-        /// 異動時間(utc)
+        /// 異動時間
         /// </summary>
-        public DateTime ModifyDateTimeUtc { get; set; } = DateTime.UtcNow;
+        public DateTime ModifyDateTime { get; set; } = DateTime.Now;
+
     }
 }
 

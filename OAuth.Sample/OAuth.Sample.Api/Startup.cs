@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using OAuth.Sample.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OAuth.Sample.Domain.Helper;
 
 namespace OAuth.Sample.Api
 {
@@ -33,19 +34,20 @@ namespace OAuth.Sample.Api
 
             Configuration = builder.Build();
 
-            #region ��l�ưѼ�
+            #region 初始化系統參數
 
             Const.EnvironmentName = environment.EnvironmentName;
             Const.DefaultConnectionString = Configuration["DBConnectionString:DefaultConnectionString"];
+            Const.OAuthSetting = Configuration.GetSection("OAuthSetting").Get<OAuthSetting>();
 
-            #endregion            
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers()
-                .AddControllersAsServices()                   
+                .AddControllersAsServices()
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.SuppressModelStateInvalidFilter = true;
@@ -67,7 +69,6 @@ namespace OAuth.Sample.Api
             services.AddMvc(config =>
             {
                 config.Filters.Add(new TypeFilterAttribute(typeof(ActionLogAttribute)));
-                config.Filters.Add(new TypeFilterAttribute(typeof(ModelStateValidationAttribute)));
             });
 
             //Seq Logger
@@ -83,7 +84,7 @@ namespace OAuth.Sample.Api
             });
 
             // Register Swagger services
-            services.AddSwaggerGen(c => 
+            services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo() { Title = "OAuth.Sample", Version = "v1" });
             });
@@ -107,7 +108,7 @@ namespace OAuth.Sample.Api
         {
             if (env.IsDevelopment() || env.IsEnvironment("Debug"))
             {
-                app.UseDeveloperExceptionPage();                
+                app.UseDeveloperExceptionPage();
 
                 //app.UseHttpsRedirection();
             }
@@ -121,7 +122,7 @@ namespace OAuth.Sample.Api
 
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseSwagger();
-            app.UseSwaggerUI(c=> 
+            app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "OAuth.Sample");
             });
@@ -143,6 +144,7 @@ namespace OAuth.Sample.Api
             });
 
             Const.Logger = logger;
+            HttpClientHelper.Logger = logger;
         }
     }
 }

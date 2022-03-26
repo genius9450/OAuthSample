@@ -1,19 +1,21 @@
-﻿using OAuth.Sample.Domain.Enum;
-using OAuth.Sample.Domain.Shared;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using OAuth.Sample.Domain.Shared;
 
-namespace OAuth.Sample.Api.Helper
+namespace OAuth.Sample.Domain.Helper
 {
     public static class HttpClientHelper
     {
+        public static ILogger Logger;
+
         /// <summary>
         /// 呼叫API
         /// </summary>
@@ -65,12 +67,12 @@ namespace OAuth.Sample.Api.Helper
             }
             catch (Exception ex)
             {
-                Const.Logger.LogError(ex, "{HttpMethod} / {FullPath} / {MediaType} / {Request} / {Response}", "POST", url, mediaType, postData, JsonConvert.SerializeObject(result));
+                Logger.LogError(ex, "{HttpMethod} / {FullPath} / {MediaType} / {Request} / {Response}", "POST", url, mediaType, postData, JsonConvert.SerializeObject(result));
                 throw ex;
             }
             finally
             {
-                Const.Logger.LogInformation("{HttpMethod} / {FullPath} / {MediaType} / {Request} / {Response}", "POST", url, mediaType, postData, JsonConvert.SerializeObject(result));
+                Logger.LogInformation("{HttpMethod} / {FullPath} / {MediaType} / {Request} / {Response}", "POST", url, mediaType, postData, JsonConvert.SerializeObject(result));
             }
 
             return result;
@@ -83,7 +85,7 @@ namespace OAuth.Sample.Api.Helper
         /// <param name="url"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static async Task<ResponseModel<TResponse>> GetAsync<TResponse>(string url, object data = null)
+        public static async Task<ResponseModel<TResponse>> GetAsync<TResponse>(string url, object data = null, Dictionary<string, string> customHeader = null)
         {            
             var Result = new ResponseModel<TResponse>();
             var parameter = string.Empty;
@@ -97,7 +99,23 @@ namespace OAuth.Sample.Api.Helper
                     url = $"{url}?{parameter}";
                 }
 
-                HttpResponseMessage response = await client.GetAsync(url);
+                StringContent content = new StringContent(parameter, Encoding.UTF8);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, url)
+                {
+                    Content = content
+                };
+
+                // 客製化Header
+                if (customHeader != null && customHeader.Any())
+                {
+                    foreach (var h in customHeader)
+                    {
+                        requestMessage.Headers.Add(h.Key, h.Value);
+                    }
+                }
+
+                HttpResponseMessage response = await client.SendAsync(requestMessage); //client.GetAsync(url);
 
                 if (response.StatusCode.ToString() == HttpStatusCode.OK.ToString())
                 {
@@ -120,12 +138,12 @@ namespace OAuth.Sample.Api.Helper
             }
             catch (Exception ex)
             {
-                Const.Logger.LogError(ex, "{HttpMethod} / {FullPath} / {Request} / {Response}", "Get", url, parameter, JsonConvert.SerializeObject(Result));
+                Logger.LogError(ex, "{HttpMethod} / {FullPath} / {Request} / {Response}", "Get", url, parameter, JsonConvert.SerializeObject(Result));
                 throw ex;
             }
             finally
             {
-                Const.Logger.LogInformation("{HttpMethod} / {FullPath} / {Request} / {Response}", "Get", url, parameter, JsonConvert.SerializeObject(Result));
+                Logger.LogInformation("{HttpMethod} / {FullPath} / {Request} / {Response}", "Get", url, parameter, JsonConvert.SerializeObject(Result));
             }
 
             return Result;

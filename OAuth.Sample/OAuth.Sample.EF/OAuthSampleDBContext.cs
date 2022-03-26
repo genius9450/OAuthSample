@@ -20,11 +20,12 @@ namespace OAuth.Sample.EF
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // sample
-            //modelBuilder
-            //    .Entity<SystemSetting>()
-            //    .AddIndex(x => x.SourceID)
-            //    .AddIndex(x => new { x.SourceID, x.Key });
+            modelBuilder
+                .Entity<User>();
+
+            modelBuilder
+                .Entity<UserOAuthSetting>()
+                .AddIndex(x => new { x.ProviderType, x.Key });
 
             base.OnModelCreating(modelBuilder);
         }

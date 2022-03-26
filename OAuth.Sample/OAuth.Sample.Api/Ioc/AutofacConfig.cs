@@ -49,10 +49,10 @@ namespace OAuth.Sample.Api.Ioc
                 .InstancePerDependency();       // 每次呼叫建立唯一的實體(預設)
 
             // 注入automapper
-            //builder.RegisterType<MappingProfile>().As<Profile>();
+            //builder.RegisterType<MappingProfile>().As<GetProfileAsync>();
             builder.RegisterAssemblyTypes(assembly.ToArray())
                 .Where(t =>
-                    t.Name.EndsWith("Profile")
+                    t.Name.EndsWith("GetProfileAsync")
                 ).As<Profile>();
 
             builder.Register(c => new MapperConfiguration(cfg =>

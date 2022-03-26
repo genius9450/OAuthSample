@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace OAuth.Sample.Api.Helper
+namespace OAuth.Sample.Domain.Helper
 {
     public static class EnumHelper
     {

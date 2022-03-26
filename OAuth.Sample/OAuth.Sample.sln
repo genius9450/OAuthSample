@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.Sample.EF", "OAuth.Sa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.Sample.Service", "OAuth.Sample.Service\OAuth.Sample.Service.csproj", "{273BFC46-E6F0-4F1C-8C50-4126F7914C9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth.Sample.Web", "OAuth.Sample.Web\OAuth.Sample.Web.csproj", "{64AC0F76-1506-4718-AD3A-9278366944C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.Sample.Web", "OAuth.Sample.Web\OAuth.Sample.Web.csproj", "{64AC0F76-1506-4718-AD3A-9278366944C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

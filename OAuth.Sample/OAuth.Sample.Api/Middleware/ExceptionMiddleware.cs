@@ -1,5 +1,4 @@
-﻿using OAuth.Sample.Api.Helper;
-using OAuth.Sample.Domain.Enum;
+﻿using OAuth.Sample.Domain.Enum;
 using OAuth.Sample.Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -7,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using OAuth.Sample.Domain.Helper;
 
 namespace OAuth.Sample.Api.Middleware
 {

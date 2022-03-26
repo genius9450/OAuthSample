@@ -22,6 +22,8 @@ namespace OAuth.Sample.Api
         /// </summary>
         public static ILogger<Startup> Logger { get; set; }
 
+        public static OAuthSetting OAuthSetting { get; set; }
+
     }
 }
 
