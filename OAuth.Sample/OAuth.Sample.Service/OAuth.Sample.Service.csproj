@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.35" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OAuth.Sample.Domain\OAuth.Sample.Domain.csproj" />
+    <ProjectReference Include="..\OAuth.Sample.EF\OAuth.Sample.EF.csproj" />
+  </ItemGroup>
+
+</Project>
+
