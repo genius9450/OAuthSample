@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +39,7 @@ namespace OAuth.Sample.Api
 
             Const.EnvironmentName = environment.EnvironmentName;
             Const.DefaultConnectionString = Configuration["DBConnectionString:DefaultConnectionString"];
-            Const.OAuthSetting = Configuration.GetSection("OAuthSetting").Get<OAuthSetting>();
+            Const.OAuthSettings = Configuration.GetSection("OAuthSettings").Get<List<OAuthSetting>>();
 
             #endregion
         }

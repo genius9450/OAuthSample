@@ -24,7 +24,7 @@ namespace OAuth.Sample.Domain.Helper
         /// <param name="data"></param>
         /// <param name="mediaType"></param>
         /// <returns></returns>
-        public static async Task<ResponseModel<TResponse>> PostAsync<TResponse>(string url, object data, string mediaType = "application/x-www-form-urlencoded")
+        public static async Task<ResponseModel<TResponse>> PostAsync<TResponse>(string url, object data, string mediaType = "application/x-www-form-urlencoded", Dictionary<string, string> customHeader = null)
         {
             var result = new ResponseModel<TResponse>();
             var postData = string.Empty;
@@ -37,12 +37,21 @@ namespace OAuth.Sample.Domain.Helper
                 else
                     postData = JsonConvert.SerializeObject(data);
 
-                StringContent content = new StringContent(postData, Encoding.UTF8, mediaType);                
+                StringContent content = new StringContent(postData, Encoding.UTF8, mediaType);
 
                 HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
                 {
-                    Content = content                    
+                    Content = content
                 };
+
+                // 客製化Header
+                if (customHeader != null && customHeader.Any())
+                {
+                    foreach (var h in customHeader)
+                    {
+                        requestMessage.Headers.Add(h.Key, h.Value);
+                    }
+                }
 
                 HttpResponseMessage response = await client.SendAsync(requestMessage);
 
@@ -62,7 +71,7 @@ namespace OAuth.Sample.Domain.Helper
                         StatusCode = response.StatusCode.ToInt(),
                         Msg = response.StatusCode.Description()
                     };
-                }                
+                }
 
             }
             catch (Exception ex)
@@ -86,13 +95,13 @@ namespace OAuth.Sample.Domain.Helper
         /// <param name="data"></param>
         /// <returns></returns>
         public static async Task<ResponseModel<TResponse>> GetAsync<TResponse>(string url, object data = null, Dictionary<string, string> customHeader = null)
-        {            
+        {
             var Result = new ResponseModel<TResponse>();
             var parameter = string.Empty;
             try
             {
                 HttpClient client = new HttpClient();
-                
+
                 if (data != null)
                 {
                     parameter = GetQueryString(data);
@@ -156,6 +165,8 @@ namespace OAuth.Sample.Domain.Helper
         /// <returns></returns>
         public static string GetQueryString(object obj)
         {
+            if (obj == null) return string.Empty;
+
             var properties = from p in obj.GetType().GetProperties()
                              where p.GetValue(obj, null) != null
                              select p.Name + "=" + HttpUtility.UrlEncode(p.GetValue(obj, null).ToString());

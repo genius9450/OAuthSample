@@ -20,7 +20,7 @@ var OAuthLogin = function () {
 
 var UserLogin = function(code) {
     let postUrl = `${$("#BaseDomainApiUrl").val()}/Login/OAuthLogin`;
-    let postData = { Code: code };
+    let postData = { ProviderType: 'LineLogin', Code: code };
 
     $.ajax({
         method: "POST",

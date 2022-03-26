@@ -25,12 +25,12 @@ namespace OAuth.Sample.Api.Controllers
     [Route("[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly ILineService _lineService;
+        private readonly IOAuthService _oAuthService;
         private readonly IUserService _userService;
 
-        public LoginController(ILineService lineService, IUserService userService)
+        public LoginController(IOAuthService oAuthService, IUserService userService)
         {
-            _lineService = lineService;
+            _oAuthService = oAuthService;
             _userService = userService;
         }
 
@@ -38,15 +38,17 @@ namespace OAuth.Sample.Api.Controllers
         [HttpPost("OAuthLogin")]
         public async Task<LoginResponse> OAuthLogin(RequestOAuthLogin input)
         {
-            var accessToken = await _lineService.TokenAsync(Const.OAuthSetting, input.Code);
-            var profile = await _lineService.GetProfileAsync(accessToken);
+            var targetSetting = Const.OAuthSettings.FirstOrDefault(x => x.ProviderType == input.ProviderType);
+            if (targetSetting == null) throw new Exception($"{input.ProviderType} Setting Not Found");
+
+            var profile = await _oAuthService.GetProfileAsync(targetSetting, input.Code);
 
             return await _userService.LoginAsync(new LoginRequest()
             {
-                Name = profile.displayName,
-                PhotoUrl = profile.pictureUrl,
-                Description = profile.statusMessage,
-                Key = profile.userId,
+                Name = profile.Name,
+                PhotoUrl = profile.PhotoUrl,
+                Description = profile.Description,
+                Key = profile.UserKey,
                 ProviderType = nameof(ProviderType.LineLogin)
             });
         }

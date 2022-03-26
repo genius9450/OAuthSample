@@ -1,5 +1,6 @@
 ﻿//using Altob.PaymentService.Domain.Model.Shared;
 
+using System.Collections.Generic;
 using OAuth.Sample.Domain.Shared;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +23,7 @@ namespace OAuth.Sample.Api
         /// </summary>
         public static ILogger<Startup> Logger { get; set; }
 
-        public static OAuthSetting OAuthSetting { get; set; }
+        public static List<OAuthSetting> OAuthSettings { get; set; }
 
     }
 }
