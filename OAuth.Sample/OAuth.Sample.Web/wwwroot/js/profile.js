@@ -1,26 +1,43 @@
-﻿window.onload = function () {
+﻿var token, userId;
+
+window.onload = function () {
+    token = Cookies.get("JwtToken", { path: window.location.pathname });
+    userId = Cookies.get("UserId", { path: window.location.pathname });
+
     let url = new URL(this.location.href);
-    if (url.searchParams.has('userId') ){
-        UserLogin(url.searchParams.get("userId"));
-    }
-    else if (url.searchParams.has('code') && url.searchParams.has('state')) {
-        let stateArr = url.searchParams.get('state').split('_');
-        switch (stateArr[0]) {
-            case 'LineNotify':
-                SubscribeLineNotify(stateArr[1], url.searchParams.get('code'));
-            break;
+   
+    if (url.searchParams.has('code') && url.searchParams.has('state')) {
+        let state = url.searchParams.get('state');
+        if (state != Cookies.get("LineNotifyState", { path: window.location.pathname })) {
+            // TODO: Cross Site
+            return;
         }
 
+        let stateArr = state.split('_');
+        switch (stateArr[0]) {
+            case 'LineNotify':
+                SubscribeLineNotify(userId, url.searchParams.get('code'));
+            break;
+        }
+        return;
+    }
+
+    if (userId) {
+        GetUserData(userId);
+        return;
     }
 
 }
 
-var UserLogin = function(userId) {
+var GetUserData = function(userId) {
     let getUrl = `${$("#BaseDomainApiUrl").val()}/User/${userId}`;
     $.ajax({
         method: "GET",
         url: getUrl,
         dataType: "json",
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
         success: function (result) {
             console.log('success', result);
 
@@ -33,8 +50,8 @@ var UserLogin = function(userId) {
 }
 
 var UserLineNotifyAuth = function () {
-    let url = new URL(this.location.href);
-    let state = `LineNotify_${url.searchParams.get("userId")}`;
+    let state = `LineNotify_${Date.now()}`;
+    Cookies.set("LineNotifyState", state, { path: this.location.pathname });
 
     let authUrl = 'https://notify-bot.line.me/oauth/authorize?';
     authUrl += 'response_type=code';
@@ -45,7 +62,7 @@ var UserLineNotifyAuth = function () {
     window.location.href = authUrl; 
 }
 
-var SubscribeLineNotify = function(userId, code) {
+var SubscribeLineNotify = function (userId, code) {
     let postUrl = `${$("#BaseDomainApiUrl").val()}/LineNotify/Subscribe`;
     let postData = { UserId: userId, Code: code };
 
@@ -53,6 +70,9 @@ var SubscribeLineNotify = function(userId, code) {
         method: "POST",
         url: postUrl,
         contentType: "application/json",
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
         data: JSON.stringify(postData),
         dataType: "json",
         success: function (result) {
@@ -67,12 +87,15 @@ var SubscribeLineNotify = function(userId, code) {
 var UnSubscribeLineNotify = function () {
     let url = new URL(this.location.href);
     let postUrl = `${$("#BaseDomainApiUrl").val()}/LineNotify/UnSubscribe`;
-    let postData = { UserId: url.searchParams.get("userId") };
+    let postData = { UserId: userId };
 
     $.ajax({
         method: "POST",
         url: postUrl,
         contentType: "application/json",
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
         data: JSON.stringify(postData),
         dataType: "json",
         success: function (result) {
@@ -92,6 +115,9 @@ var SendMessage = function() {
         method: "POST",
         url: postUrl,
         contentType: "application/json",
+        headers: {
+            'Authorization': `Bearer ${token}`
+        },
         data: JSON.stringify(postData),
         dataType: "json",
         success: function (result) {

@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
@@ -22,6 +23,7 @@ using OAuth.Sample.Service.Service;
 namespace OAuth.Sample.Api.Controllers
 {
 
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class LineNotifyController : ControllerBase
@@ -75,7 +77,7 @@ namespace OAuth.Sample.Api.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost("Notify")]
-        public async Task Notify(string Message)
+        public async Task Notify(RequestSendMessage input)
         {
             var notifies = _baseService.GetList<UserOAuthSetting>(x =>
                 x.ProviderType == ProviderType.LineNotify.ToString());
@@ -84,7 +86,7 @@ namespace OAuth.Sample.Api.Controllers
             foreach (var notify in notifies)
             {
                 var provider = new LineNotifyProvider();
-                await provider.SendMessage(notify.Key, Message);
+                await provider.SendMessage(notify.Key, input.Message);
             }
         }
 
@@ -123,8 +125,6 @@ namespace OAuth.Sample.Api.Controllers
 
     public class RequestSendMessage
     {
-        public int UserId { get; set; }
-
         public string Message { get; set; }
 
     }

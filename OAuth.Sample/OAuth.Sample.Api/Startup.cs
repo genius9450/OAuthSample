@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,12 +12,15 @@ using OAuth.Sample.Api.Attribute;
 using OAuth.Sample.Api.Middleware;
 using OAuth.Sample.Api.Ioc;
 using Autofac;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using OAuth.Sample.Api;
 using OAuth.Sample.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using OAuth.Sample.EF;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OAuth.Sample.Api.Helper;
 using OAuth.Sample.Domain.Helper;
 
 namespace OAuth.Sample.Api
@@ -90,6 +95,28 @@ namespace OAuth.Sample.Api
                 c.SwaggerDoc("v1", new OpenApiInfo() { Title = "OAuth.Sample", Version = "v1" });
             });
 
+            services.AddSingleton<JwtHelpers>();
+            // dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.IncludeErrorDetails = true; // Default: true
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // Let "sub" assign to User.Identity.Name
+                        NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+                        ValidateIssuer = true,
+                        ValidIssuer = Configuration.GetValue<string>("JwtSettings:Issuer"),
+                        ValidateLifetime = true, // 驗證JWT時效性
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = false,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JwtSettings:SignKey")))
+                    };
+                });
+
+
             services.AddHttpClient();
 
         }
@@ -132,9 +159,12 @@ namespace OAuth.Sample.Api
 
             app.UseRouting();
 
-            app.UseCors("CorsPolicy");  // ����
+            app.UseCors("CorsPolicy");  
 
-            app.UseMiddleware<ExceptionMiddleware>(); // ��������Exception
+            app.UseAuthentication();  // 先驗證
+            app.UseAuthorization();   // 後授權
+
+            app.UseMiddleware<ExceptionMiddleware>(); 
 
             app.UseEndpoints(endpoints =>
             {

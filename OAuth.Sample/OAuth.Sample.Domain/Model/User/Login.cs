@@ -19,7 +19,7 @@
         //public string PhotoUrl { get; set; }
         //public string Description { get; set; }
 
-        //public string JwtToken { get; set; } // TODO
+        public string JwtToken { get; set; }
 
     }
 }

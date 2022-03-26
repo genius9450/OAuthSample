@@ -34,7 +34,6 @@ namespace OAuth.Sample.Service.Service
             var result = await HttpClientHelper.GetAsync<ProfileModel>("https://api.line.me/v2/profile", customHeader: new Dictionary<string, string>() { { "Authorization", $"Bearer {accessToken}" } });
             if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Line Get GetProfileAsync Failed");
 
-            
             return new UserProfileData()
             {
                 Name = result.Data.displayName,

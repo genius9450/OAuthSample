@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OAuth.Sample.Api.Helper;
 using OAuth.Sample.Domain.Enum;
 using OAuth.Sample.Domain.Helper;
 using OAuth.Sample.Domain.Model.Line;
@@ -27,11 +28,13 @@ namespace OAuth.Sample.Api.Controllers
     {
         private readonly IOAuthService _oAuthService;
         private readonly IUserService _userService;
+        private readonly JwtHelpers _jwt;
 
-        public LoginController(IOAuthService oAuthService, IUserService userService)
+        public LoginController(IOAuthService oAuthService, IUserService userService, JwtHelpers jwt)
         {
             _oAuthService = oAuthService;
             _userService = userService;
+            _jwt = jwt;
         }
 
 

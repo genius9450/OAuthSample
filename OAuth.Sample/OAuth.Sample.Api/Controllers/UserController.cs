@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OAuth.Sample.Domain.Enum;
@@ -33,6 +34,7 @@ namespace OAuth.Sample.Api.Controllers
         }
 
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<UserData> Get(int id)
         {

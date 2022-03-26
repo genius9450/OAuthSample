@@ -4,23 +4,34 @@ window.onload = function() {
     let url = new URL(this.location.href);
 
     if (url.searchParams.has('code') && url.searchParams.has('state')) {
-        UserLogin(url.searchParams.get("code"));
+        let state = url.searchParams.get('state');
+        if (state != Cookies.get("LoginState", { path: window.location.pathname })) {
+            // TODO: Cross Site
+            return;
+        }
+
+        GetUserData(state.split('_')[0], url.searchParams.get("code"));
+    } else {
+        RemoveLoginCookie();
     }
 }
 
 var OAuthLogin = function () {
+    let state = `LineLogin_${Date.now()}`;
+    Cookies.set("LoginState", state, { path: this.location.pathname });
+
     let url = 'https://access.line.me/oauth2/v2.1/authorize?';
     url += 'response_type=code';
     url += `&client_id=1654549010`;
     url += `&redirect_uri=https://localhost:44350`;
-    url += '&state=123';
+    url += `&state=${state}`;
     url += '&scope=profile%20openid%20email';
     window.location.href = url;
 }
 
-var UserLogin = function(code) {
+var GetUserData = function (providerType, code) {
     let postUrl = `${$("#BaseDomainApiUrl").val()}/Login/OAuthLogin`;
-    let postData = { ProviderType: 'LineLogin', Code: code };
+    let postData = { ProviderType: providerType, Code: code };
 
     $.ajax({
         method: "POST",
@@ -31,10 +42,22 @@ var UserLogin = function(code) {
         success: function (result) {
             console.log('success', result);
 
+            SetLoginCookie(result);
             window.location.href = `../Profile?userId=${result.UserId}`;
         },
         error: function (result) {
             console.log('error', result);
         }
     });
+}
+
+function SetLoginCookie(loginData) {
+    Cookies.set("UserId", loginData.UserId, { path: this.location.pathname });
+    Cookies.set("JwtToken", loginData.JwtToken, { path: this.location.pathname }); 
+}
+
+function RemoveLoginCookie() {
+    Cookies.remove('UserId', { path: this.location.pathname });
+    Cookies.remove('JwtToken', { path: this.location.pathname });
+    Cookies.remove('LoginState', { path: this.location.pathname });
 }

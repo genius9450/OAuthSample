@@ -26,5 +26,6 @@ namespace OAuth.Sample.Api
         public static List<OAuthSetting> OAuthSettings { get; set; }
 
     }
+
 }
 
