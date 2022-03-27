@@ -39,10 +39,10 @@ namespace OAuth.Sample.Api.Controllers
 
 
         [HttpPost("OAuthLogin")]
-        public async Task<LoginResponse> OAuthLogin(RequestOAuthLogin input)
+        public async Task<ActionResult<LoginResponse>> OAuthLogin(RequestOAuthLogin input)
         {
             var targetSetting = Const.OAuthSettings.FirstOrDefault(x => x.ProviderType == input.ProviderType);
-            if (targetSetting == null) throw new Exception($"{input.ProviderType} Setting Not Found");
+            if (targetSetting == null) return NotFound(); //throw new Exception($"{input.ProviderType} Setting Not Found");
 
             var profile = await _oAuthService.GetProfileAsync(targetSetting, input.Code);
 

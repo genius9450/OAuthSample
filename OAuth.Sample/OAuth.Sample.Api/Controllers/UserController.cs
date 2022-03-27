@@ -36,7 +36,7 @@ namespace OAuth.Sample.Api.Controllers
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<UserData> Get(int id)
+        public async Task<ActionResult<UserData>> Get(int id)
         {
             return await _userService.GetUserAsync(id);
         }

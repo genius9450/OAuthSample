@@ -43,7 +43,7 @@ namespace OAuth.Sample.Api.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost("Subscribe")]
-        public async Task Subscribe(RequestLineNotify input)
+        public async Task<ActionResult> Subscribe(RequestLineNotify input)
         {
             CheckUserExist(input);
 
@@ -52,6 +52,8 @@ namespace OAuth.Sample.Api.Controllers
             var accessToken = await _oAuthService.GetAccessTokenAsync(targetSetting, input.Code);
 
             await HandleUserSetting(input, accessToken);
+
+            return Ok();
         }
 
         /// <summary>
@@ -60,15 +62,18 @@ namespace OAuth.Sample.Api.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost("UnSubscribe")]
-        public async Task UnSubscribe(RequestLineNotify input)
+        public async Task<ActionResult> UnSubscribe(RequestLineNotify input)
         {
             var targetSetting = GetLineNotifySetting();
 
             var notify = _baseService.GetSingle<UserOAuthSetting>(x =>
                 x.UserId == input.UserId && x.ProviderType == ProviderType.LineNotify.ToString());
+            if (notify == null) return NoContent();
 
             await _oAuthService.RevokeAsync(targetSetting, notify.Key);
-            await _baseService.DeleteAsync<UserOAuthSetting>(notify);
+            await _baseService.DeleteAsync<UserOAuthSetting>(notify.Id);
+
+            return Ok();
         }
 
         /// <summary>
@@ -77,17 +82,19 @@ namespace OAuth.Sample.Api.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost("Notify")]
-        public async Task Notify(RequestSendMessage input)
+        public async Task<ActionResult> Notify(RequestSendMessage input)
         {
             var notifies = _baseService.GetList<UserOAuthSetting>(x =>
                 x.ProviderType == ProviderType.LineNotify.ToString());
-            if (!notifies.Any()) return;
+            if (!notifies.Any()) return NoContent();
 
             foreach (var notify in notifies)
             {
                 var provider = new LineNotifyProvider();
                 await provider.SendMessage(notify.Key, input.Message);
             }
+
+            return Ok();
         }
 
         private async Task HandleUserSetting(RequestLineNotify input, string accessToken)

@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\cookie\" />
+    <Folder Include="wwwroot\img\" />
+    <Folder Include="wwwroot\lib\bootbox\" />
+    <Folder Include="wwwroot\lib\popper\" />
   </ItemGroup>
 
 </Project>

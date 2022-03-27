@@ -5,7 +5,7 @@ window.onload = function() {
 
     if (url.searchParams.has('code') && url.searchParams.has('state')) {
         let state = url.searchParams.get('state');
-        if (state != Cookies.get("LoginState", { path: window.location.pathname })) {
+        if (state != Cookies.get("LoginState", { path: this.location.pathname })) {
             // TODO: Cross Site
             return;
         }
@@ -43,7 +43,7 @@ var GetUserData = function (providerType, code) {
             console.log('success', result);
 
             SetLoginCookie(result);
-            window.location.href = `../Profile?userId=${result.UserId}`;
+            window.location.href = '../Profile';
         },
         error: function (result) {
             console.log('error', result);
@@ -52,12 +52,12 @@ var GetUserData = function (providerType, code) {
 }
 
 function SetLoginCookie(loginData) {
-    Cookies.set("UserId", loginData.UserId, { path: this.location.pathname });
-    Cookies.set("JwtToken", loginData.JwtToken, { path: this.location.pathname }); 
+    Cookies.set("UserId", loginData.UserId);
+    Cookies.set("JwtToken", loginData.JwtToken); 
 }
 
 function RemoveLoginCookie() {
-    Cookies.remove('UserId', { path: this.location.pathname });
-    Cookies.remove('JwtToken', { path: this.location.pathname });
-    Cookies.remove('LoginState', { path: this.location.pathname });
+    Cookies.remove('UserId');
+    Cookies.remove('JwtToken');
+    Cookies.remove('LoginState');
 }

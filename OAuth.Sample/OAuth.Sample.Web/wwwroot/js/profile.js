@@ -1,14 +1,14 @@
 ﻿var token, userId;
 
 window.onload = function () {
-    token = Cookies.get("JwtToken", { path: window.location.pathname });
-    userId = Cookies.get("UserId", { path: window.location.pathname });
+    token = Cookies.get("JwtToken");
+    userId = Cookies.get("UserId");
 
     let url = new URL(this.location.href);
-   
+
     if (url.searchParams.has('code') && url.searchParams.has('state')) {
         let state = url.searchParams.get('state');
-        if (state != Cookies.get("LineNotifyState", { path: window.location.pathname })) {
+        if (state != Cookies.get("LineNotifyState", { path: this.location.pathname })) {
             // TODO: Cross Site
             return;
         }
@@ -17,19 +17,14 @@ window.onload = function () {
         switch (stateArr[0]) {
             case 'LineNotify':
                 SubscribeLineNotify(userId, url.searchParams.get('code'));
-            break;
+                break;
         }
-        return;
     }
 
-    if (userId) {
-        GetUserData(userId);
-        return;
-    }
-
+    GetUserData(userId);
 }
 
-var GetUserData = function(userId) {
+var GetUserData = function (userId) {
     let getUrl = `${$("#BaseDomainApiUrl").val()}/User/${userId}`;
     $.ajax({
         method: "GET",
@@ -39,12 +34,12 @@ var GetUserData = function(userId) {
             'Authorization': `Bearer ${token}`
         },
         success: function (result) {
-            console.log('success', result);
-
+            $('#PhotoUrl').attr('src', result.PhotoUrl);
             $('#Name').text(result.Name);
+            $('#Description').text(result.Description);
         },
         error: function (result) {
-            console.log('error', result);
+            if (result.status === 401) window.location.href = "/";
         }
     });
 }
@@ -59,7 +54,7 @@ var UserLineNotifyAuth = function () {
     authUrl += `&redirect_uri=https://localhost:44350/Profile`;
     authUrl += `&state=${state}`;
     authUrl += '&scope=notify';
-    window.location.href = authUrl; 
+    window.location.href = authUrl;
 }
 
 var SubscribeLineNotify = function (userId, code) {
@@ -74,18 +69,24 @@ var SubscribeLineNotify = function (userId, code) {
             'Authorization': `Bearer ${token}`
         },
         data: JSON.stringify(postData),
-        dataType: "json",
-        success: function (result) {
-            console.log('success', result);
+        dataType: "text",
+        success: function () {
+            bootbox.alert({
+                message: "Line Notify訂閱成功",
+                callback: function () {
+                    window.location.href = '../Profile';
+                }
+            });
         },
-        error: function (result) {
-            console.log('error', result);
+        error: function () {
+            bootbox.alert({
+                message: "Line Notify訂閱失敗"
+            });
         }
     });
 }
 
 var UnSubscribeLineNotify = function () {
-    let url = new URL(this.location.href);
     let postUrl = `${$("#BaseDomainApiUrl").val()}/LineNotify/UnSubscribe`;
     let postData = { UserId: userId };
 
@@ -97,19 +98,40 @@ var UnSubscribeLineNotify = function () {
             'Authorization': `Bearer ${token}`
         },
         data: JSON.stringify(postData),
-        dataType: "json",
-        success: function (result) {
-            console.log('success', result);
+        dataType: "text",
+        success: function () {
+            bootbox.alert({
+                message: "Line Notify取消訂閱成功"
+            });
         },
-        error: function (result) {
-            console.log('error', result);
+        error: function () {
+            bootbox.alert({
+                message: "Line Notify取消訂閱失敗"
+            });
         }
     });
 }
 
-var SendMessage = function() {
+var SendMessageConfirm = function () {
+    bootbox.prompt({
+        title: '發送訊息',
+        value: 'Hello World!',
+        callback: function (message) {
+            if (message) {
+                $('.bootbox-input-text').removeClass('is-invalid');
+                SendMessage(message);
+            } else if (message === '') {
+                $('.bootbox-input-text').addClass('is-invalid');
+                return false;
+            }
+        }
+    });
+}
+
+var SendMessage = function (message) {
+
     let postUrl = `${$("#BaseDomainApiUrl").val()}/LineNotify/Notify`;
-    let postData = { Message: 'Hello World!' };
+    let postData = { Message: message };
 
     $.ajax({
         method: "POST",
@@ -119,12 +141,20 @@ var SendMessage = function() {
             'Authorization': `Bearer ${token}`
         },
         data: JSON.stringify(postData),
-        dataType: "json",
-        success: function (result) {
-            console.log('success', result);
+        dataType: "text",
+        success: function () {
+            bootbox.alert({
+                message: "Line Notify發送訊息成功"
+            });
         },
-        error: function (result) {
-            console.log('error', result);
+        error: function () {
+            bootbox.alert({
+                message: "Line Notify發送訊息失敗"
+            });
         }
     });
+}
+
+var Logout = function() {
+    window.location.href = "/";
 }
