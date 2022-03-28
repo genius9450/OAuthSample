@@ -37,6 +37,11 @@ namespace OAuth.Sample.Api.Controllers
             _jwt = jwt;
         }
 
+        protected string UserId()
+        {
+            var principal = HttpContext.User;
+            return principal?.Claims?.SingleOrDefault(p => p.Type == "username")?.Value;
+        }
 
         [HttpPost("OAuthLogin")]
         public async Task<ActionResult<LoginResponse>> OAuthLogin(RequestOAuthLogin input)
@@ -52,7 +57,7 @@ namespace OAuth.Sample.Api.Controllers
                 PhotoUrl = profile.PhotoUrl,
                 Description = profile.Description,
                 Key = profile.UserKey,
-                ProviderType = nameof(ProviderType.LineLogin)
+                ProviderType = input.ProviderType
             });
         }
 

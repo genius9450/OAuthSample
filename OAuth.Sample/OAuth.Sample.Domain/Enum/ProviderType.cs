@@ -9,6 +9,7 @@ namespace OAuth.Sample.Domain.Enum
     public enum ProviderType
     {
         LineLogin,
-        LineNotify
+        LineNotify,
+        FacebookLogin
     }
 }

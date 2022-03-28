@@ -1,4 +1,4 @@
-﻿.line-login {
+﻿.login-btn {
     cursor: pointer;
 }
 
@@ -8,8 +8,8 @@
     content: url('../img/btn_login_base.png');
 }
 
-    .line-login-img:hover {
+    /*.line-login-img:hover {
         max-width: 100%;
         max-height: 100%;
         content: url('../img/btn_login_hover.png');
-    }
+    }*/

@@ -16,7 +16,7 @@ window.onload = function() {
     }
 }
 
-var OAuthLogin = function () {
+var LineLogin = function () {
     let state = `LineLogin_${Date.now()}`;
     Cookies.set("LoginState", state, { path: this.location.pathname });
 
@@ -26,6 +26,17 @@ var OAuthLogin = function () {
     url += `&redirect_uri=https://localhost:44350`;
     url += `&state=${state}`;
     url += '&scope=profile%20openid%20email';
+    window.location.href = url;
+}
+
+var FacebookLogin = function () {
+    let state = `FacebookLogin_${Date.now()}`;
+    Cookies.set("LoginState", state, { path: this.location.pathname });
+
+    let url = 'https://www.facebook.com/v13.0/dialog/oauth?';
+    url += `&client_id=389331466526369`;
+    url += `&redirect_uri=https://localhost:44350`;
+    url += `&state=${state}`;
     window.location.href = url;
 }
 

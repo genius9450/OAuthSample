@@ -25,10 +25,10 @@ namespace OAuth.Sample.Service.Service
             _baseService = baseService;
             _configuration = configuration;
         }
-
+        
         public async Task<LoginResponse> LoginAsync(LoginRequest input)
         {
-            var userOAuthSetting = _baseService.GetSingle<UserOAuthSetting>(x => x.ProviderType == input.ProviderType && x.Key == input.Key);
+            var userOAuthSetting = _baseService.GetSingle<UserOAuthSetting>(x => x.ProviderType == input.ProviderType.ToString() && x.Key == input.Key);
             var user = userOAuthSetting == null
                 ? await CreteUserAsync(input)
                 : await UpdateUserAsync(input, userOAuthSetting);
@@ -65,7 +65,7 @@ namespace OAuth.Sample.Service.Service
                 {
                     new UserOAuthSetting()
                     {
-                        ProviderType = input.ProviderType,
+                        ProviderType = input.ProviderType.ToString(),
                         Key = input.Key
                     }
                 }

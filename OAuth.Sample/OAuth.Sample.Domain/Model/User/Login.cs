@@ -1,9 +1,11 @@
-﻿namespace OAuth.Sample.Domain.Model.User
+﻿using OAuth.Sample.Domain.Enum;
+
+namespace OAuth.Sample.Domain.Model.User
 {
 
     public class LoginRequest
     {
-        public string ProviderType { get; set; }
+        public ProviderType ProviderType { get; set; }
         public string Key { get; set; }
         public string Name { get; set; }
         public string PhotoUrl { get; set; }
