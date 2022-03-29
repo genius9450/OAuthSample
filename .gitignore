@@ -359,3 +359,4 @@ MigrationBackup/
 /OAuth.Sample/OAuth.Sample.Api/appsettings.Production.json
 /OAuth.Sample/OAuth.Sample.Web/Properties/ServiceDependencies/OAuthLoginDemoWeb - Web Deploy
 /OAuth.Sample/OAuth.Sample.Web/appsettings.Production.json
+/OAuth.Sample/OAuth.Sample.Web/appsettings.Development.json
