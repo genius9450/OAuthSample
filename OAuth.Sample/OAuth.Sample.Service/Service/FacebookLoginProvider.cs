@@ -42,7 +42,7 @@ namespace OAuth.Sample.Service.Service
             {
                 Name = result.Data.name,
                 PhotoUrl = result.Data.picture?.data?.url,
-                Description = result.Data.email,
+                Email = result.Data.email,
                 UserKey = result.Data.id
             };
         }

@@ -12,11 +12,12 @@ namespace OAuth.Sample.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Sqlite:Autoincrement", true),
                     CreateDateTime = table.Column<DateTime>(nullable: false),
                     ModifyDateTime = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     PhotoUrl = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -29,7 +30,7 @@ namespace OAuth.Sample.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Sqlite:Autoincrement", true),
                     CreateDateTime = table.Column<DateTime>(nullable: false),
                     ModifyDateTime = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<int>(nullable: false),

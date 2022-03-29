@@ -9,6 +9,7 @@ namespace OAuth.Sample.Domain.Model.User
         public string Key { get; set; }
         public string Name { get; set; }
         public string PhotoUrl { get; set; }
+        public string Email { get; set; }
         public string Description { get; set; }
 
     }

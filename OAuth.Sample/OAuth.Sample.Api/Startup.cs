@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
@@ -86,7 +87,7 @@ namespace OAuth.Sample.Api
             // runtime db
             services.AddDbContext<OAuthSampleDBContext>(options =>
             {
-                options.UseSqlServer(Const.DefaultConnectionString);
+                options.UseSqlite(Const.DefaultConnectionString);
             });
 
             // Register Swagger services

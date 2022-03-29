@@ -57,6 +57,7 @@ namespace OAuth.Sample.Service.Service
         public string UserKey { get; set; }
         public string Name { get; set; }
         public string PhotoUrl { get; set; }
+        public string Email { get; set; }
         public string Description { get; set; }
     }
 }

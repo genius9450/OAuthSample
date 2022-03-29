@@ -60,6 +60,7 @@ namespace OAuth.Sample.Service.Service
             {
                 Name = input.Name,
                 PhotoUrl = input.PhotoUrl,
+                Email = input.Email,
                 Description = input.Description,
                 UserOAuthSettings = new List<UserOAuthSetting>()
                 {
@@ -79,6 +80,7 @@ namespace OAuth.Sample.Service.Service
             if (user == null) throw new Exception("User Not Found");
 
             user.Name = input.Name;
+            user.Email = input.Email;
             user.PhotoUrl = input.PhotoUrl;
             user.Description = input.Description;
             await _baseService.UpdateAsync(user);

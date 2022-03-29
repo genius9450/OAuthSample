@@ -355,3 +355,4 @@ MigrationBackup/
 
 /OAuth.Sample/OAuth.Sample.Api/appsettings.Development.json
 /OAuth.Sample/OAuth.Sample.Api/Properties
+/OAuth.Sample/OAuth.Sample.Api/database.db

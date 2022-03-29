@@ -56,6 +56,7 @@ namespace OAuth.Sample.Api.Controllers
                 Name = profile.Name,
                 PhotoUrl = profile.PhotoUrl,
                 Description = profile.Description,
+                Email = profile.Email,
                 Key = profile.UserKey,
                 ProviderType = input.ProviderType
             });

@@ -20,6 +20,11 @@ namespace OAuth.Sample.EF.Entity
         public string PhotoUrl { get; set; }
 
         /// <summary>
+        /// 電子信箱
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
         /// 使用者自我介紹
         /// </summary>
         public string Description { get; set; }
