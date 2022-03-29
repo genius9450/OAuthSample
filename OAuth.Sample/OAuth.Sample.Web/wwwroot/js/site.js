@@ -9,7 +9,6 @@ var site = function() {
     return {
         init: function (obj) {
             Object.assign(settings, obj);
-            console.log('settings', settings);
         }
     };
 }

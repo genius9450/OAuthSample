@@ -1,6 +1,4 @@
 ﻿window.onload = function () {
-    console.log('index', settings);
-
     let url = new URL(this.location.href);
 
     if (url.searchParams.has('code') && url.searchParams.has('state')) {
@@ -71,8 +69,6 @@ var GetUserData = function (providerType, code) {
         data: JSON.stringify(postData),
         dataType: "json",
         success: function (result) {
-            console.log('success', result);
-
             SetLoginCookie(result);
             window.location.href = '../Profile';
             $('#Loading').hide();

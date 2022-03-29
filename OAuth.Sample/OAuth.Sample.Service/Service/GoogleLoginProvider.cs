@@ -31,9 +31,10 @@ namespace OAuth.Sample.Service.Service
 
         public async Task<UserProfileData> GetProfileAsync(string accessToken)
         {
-            var result = await HttpClientHelper.GetAsync<object>("https://www.googleapis.com/drive/v2/files", new { access_token = accessToken }, customHeader: new Dictionary<string, string>() { { "Authorization", $"Bearer {accessToken}" } });
+            var result = await HttpClientHelper.GetAsync<object>("https://www.googleapis.com/drive/v2/files", new { access_token = accessToken });
             if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Google Get GetProfile Failed");
 
+            // TODO: 403 Forbidden
             return new UserProfileData()
             {
                 //Name = result.Data.name,
