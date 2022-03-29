@@ -40,6 +40,19 @@ var FacebookLogin = function () {
     window.location.href = url;
 }
 
+var GoogleLogin = function () {
+    let state = `GoogleLogin_${Date.now()}`;
+    Cookies.set("LoginState", state, { path: this.location.pathname });
+
+    let url = 'https://accounts.google.com/o/oauth2/v2/auth?';
+    url += 'response_type=code';
+    url += `&client_id=632085700226-u2g1r5va353ib8t3fkd14kq92oh80367.apps.googleusercontent.com`;
+    url += `&redirect_uri=https://localhost:44350`;
+    url += `&state=${state}`;
+    url += '&scope=https://www.googleapis.com/auth/userinfo.profile';
+    window.location.href = url;
+}
+
 var GetUserData = function (providerType, code) {
     let postUrl = `${$("#BaseDomainApiUrl").val()}/Login/OAuthLogin`;
     let postData = { ProviderType: providerType, Code: code };

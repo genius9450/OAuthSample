@@ -354,3 +354,4 @@ MigrationBackup/
 .ionide/
 
 /OAuth.Sample/OAuth.Sample.Api/appsettings.Development.json
+/OAuth.Sample/OAuth.Sample.Api/Properties

@@ -10,6 +10,7 @@ namespace OAuth.Sample.Domain.Enum
     {
         LineLogin,
         LineNotify,
-        FacebookLogin
+        FacebookLogin,
+        GoogleLogin
     }
 }
