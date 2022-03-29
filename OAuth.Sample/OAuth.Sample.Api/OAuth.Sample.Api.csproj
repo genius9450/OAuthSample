@@ -29,6 +29,12 @@
     <ProjectReference Include="..\OAuth.Sample.Service\OAuth.Sample.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="database.db">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <!--啟用專案的 XML 註解功能-->
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

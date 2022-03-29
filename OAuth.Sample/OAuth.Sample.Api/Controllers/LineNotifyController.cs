@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using OAuth.Sample.Domain.Enum;
-using OAuth.Sample.Domain.Helper;
 using OAuth.Sample.Domain.Model.Line;
-using OAuth.Sample.Domain.Model.Login;
-using OAuth.Sample.Domain.Model.User;
 using OAuth.Sample.Domain.Shared;
 using OAuth.Sample.EF.Entity;
 using OAuth.Sample.Service.Interface;
@@ -128,18 +118,6 @@ namespace OAuth.Sample.Api.Controllers
             var user = _baseService.GetSingle<User>(x => x.Id == input.UserId);
             if (user == null) throw new Exception("User Not Found");
         }
-    }
-
-    public class RequestSendMessage
-    {
-        public string Message { get; set; }
-
-    }
-
-    public class RequestLineNotify
-    {
-        public int UserId { get; set; }
-        public string Code { get; set; }
     }
 }
 

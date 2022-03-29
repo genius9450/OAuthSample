@@ -6,13 +6,16 @@
     if (url.searchParams.has('code') && url.searchParams.has('state')) {
         let state = url.searchParams.get('state');
         if (state != Cookies.get("LoginState", { path: this.location.pathname })) {
-            // TODO: Cross Site
+            bootbox.alert({
+                message: "state驗證失敗"
+            });
             return;
         }
 
         GetUserData(state.split('_')[0], url.searchParams.get("code"));
     } else {
         RemoveLoginCookie();
+        $('#Loading').hide();
     }
 }
 
@@ -60,6 +63,7 @@ var GetUserData = function (providerType, code) {
     let postUrl = `${settings.BaseDomainApiUrl}/Login/OAuthLogin`;
     let postData = { ProviderType: providerType, Code: code };
 
+    $('#Loading').show();
     $.ajax({
         method: "POST",
         url: postUrl,
@@ -71,9 +75,14 @@ var GetUserData = function (providerType, code) {
 
             SetLoginCookie(result);
             window.location.href = '../Profile';
+            $('#Loading').hide();
         },
         error: function (result) {
-            console.log('error', result);
+            bootbox.alert({
+                message: "OAuth登入失敗"
+            });
+
+            $('#Loading').hide();
         }
     });
 }

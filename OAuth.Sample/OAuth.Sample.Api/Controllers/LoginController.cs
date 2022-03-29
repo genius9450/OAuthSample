@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OAuth.Sample.Api.Helper;
-using OAuth.Sample.Domain.Enum;
-using OAuth.Sample.Domain.Helper;
-using OAuth.Sample.Domain.Model.Line;
 using OAuth.Sample.Domain.Model.Login;
 using OAuth.Sample.Domain.Model.User;
 using OAuth.Sample.Service.Interface;
-using OAuth.Sample.Service.Service;
 
 namespace OAuth.Sample.Api.Controllers
 {
@@ -35,12 +24,6 @@ namespace OAuth.Sample.Api.Controllers
             _oAuthService = oAuthService;
             _userService = userService;
             _jwt = jwt;
-        }
-
-        protected string UserId()
-        {
-            var principal = HttpContext.User;
-            return principal?.Claims?.SingleOrDefault(p => p.Type == "username")?.Value;
         }
 
         [HttpPost("OAuthLogin")]

@@ -1,21 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OAuth.Sample.Domain.Enum;
-using OAuth.Sample.Domain.Helper;
-using OAuth.Sample.Domain.Model.Line;
-using OAuth.Sample.Domain.Model.Login;
 using OAuth.Sample.Domain.Model.User;
 using OAuth.Sample.Service.Interface;
-using OAuth.Sample.Service.Service;
 
 namespace OAuth.Sample.Api.Controllers
 {
@@ -39,6 +27,16 @@ namespace OAuth.Sample.Api.Controllers
         public async Task<ActionResult<UserData>> Get(int id)
         {
             return await _userService.GetUserAsync(id);
+        }
+
+        [Authorize]
+        [HttpGet("GetSelf")]
+        public async Task<ActionResult<UserData>> GetSelf()
+        {
+            var principal = HttpContext.User;
+            var userId = principal?.Claims?.SingleOrDefault(p => p.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            return await _userService.GetUserAsync(int.Parse(userId));
         }
 
     }

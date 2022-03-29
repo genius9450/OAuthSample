@@ -9,7 +9,9 @@ window.onload = function () {
     if (url.searchParams.has('code') && url.searchParams.has('state')) {
         let state = url.searchParams.get('state');
         if (state != Cookies.get("LineNotifyState", { path: this.location.pathname })) {
-            // TODO: Cross Site
+            bootbox.alert({
+                message: "state驗證失敗"
+            });
             return;
         }
 
@@ -25,7 +27,7 @@ window.onload = function () {
 }
 
 var GetUserData = function (userId) {
-    let getUrl = `${settings.BaseDomainApiUrl}/User/${userId}`;
+    let getUrl = `${settings.BaseDomainApiUrl}/User/GetSelf`;
     $.ajax({
         method: "GET",
         url: getUrl,
@@ -37,6 +39,8 @@ var GetUserData = function (userId) {
             $('#PhotoUrl').attr('src', result.PhotoUrl);
             $('#Name').text(result.Name);
             $('#Description').text(result.Description);
+
+            $('#Loading').hide();
         },
         error: function (result) {
             if (result.status === 401) window.location.href = "/";

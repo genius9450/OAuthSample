@@ -58,6 +58,7 @@ namespace OAuth.Sample.Api.Middleware
 #else
             string message = "InternalServerError";
 #endif
+
             var result = JsonConvert.SerializeObject(new ResponseModel<object>() { Msg = message, StatusCode = ResponseStatusCode.Fail.ToInt() });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = HttpStatusCode.InternalServerError.ToInt();
