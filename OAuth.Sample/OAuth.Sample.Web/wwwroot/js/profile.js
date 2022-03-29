@@ -25,7 +25,7 @@ window.onload = function () {
 }
 
 var GetUserData = function (userId) {
-    let getUrl = `${$("#BaseDomainApiUrl").val()}/User/${userId}`;
+    let getUrl = `${settings.BaseDomainApiUrl}/User/${userId}`;
     $.ajax({
         method: "GET",
         url: getUrl,
@@ -48,17 +48,18 @@ var UserLineNotifyAuth = function () {
     let state = `LineNotify_${Date.now()}`;
     Cookies.set("LineNotifyState", state, { path: this.location.pathname });
 
+    let oauthSetting = settings.OAuthSettings.find(x => x.ProviderType == 'LineNotify');
     let authUrl = 'https://notify-bot.line.me/oauth/authorize?';
     authUrl += 'response_type=code';
-    authUrl += `&client_id=JXHlpy3ASuitjhpFEYeymW`;
-    authUrl += `&redirect_uri=https://localhost:44350/Profile`;
+    authUrl += `&client_id=${oauthSetting.ClientId}`;
+    authUrl += `&redirect_uri=${oauthSetting.RedirectUri}`;
     authUrl += `&state=${state}`;
     authUrl += '&scope=notify';
     window.location.href = authUrl;
 }
 
 var SubscribeLineNotify = function (userId, code) {
-    let postUrl = `${$("#BaseDomainApiUrl").val()}/LineNotify/Subscribe`;
+    let postUrl = `${settings.BaseDomainApiUrl}/LineNotify/Subscribe`;
     let postData = { UserId: userId, Code: code };
 
     $.ajax({
@@ -87,7 +88,7 @@ var SubscribeLineNotify = function (userId, code) {
 }
 
 var UnSubscribeLineNotify = function () {
-    let postUrl = `${$("#BaseDomainApiUrl").val()}/LineNotify/UnSubscribe`;
+    let postUrl = `${settings.BaseDomainApiUrl}/LineNotify/UnSubscribe`;
     let postData = { UserId: userId };
 
     $.ajax({
@@ -130,7 +131,7 @@ var SendMessageConfirm = function () {
 
 var SendMessage = function (message) {
 
-    let postUrl = `${$("#BaseDomainApiUrl").val()}/LineNotify/Notify`;
+    let postUrl = `${settings.BaseDomainApiUrl}/LineNotify/Notify`;
     let postData = { Message: message };
 
     $.ajax({
