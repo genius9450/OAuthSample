@@ -9,4 +9,9 @@
 - [x] API TargetFramework : .NET 5
 - [x] WEB TargetFramework : .NET 5 (Razor Page)
 - [x] ORM : EntityFrameworkCore (SQLLite CodeFirst)
-- [x] OAuth 實做 : Line Login、Line Notify、Facebook Login、Google Login
+- [x] Authorization: JWT
+- [x] OAuth (Implemented IOAuthProvider.cs) : 
+	- Line Login
+	- Line Notify
+	- Facebook Login
+	- Google Login
