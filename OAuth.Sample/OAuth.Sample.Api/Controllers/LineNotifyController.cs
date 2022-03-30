@@ -16,7 +16,7 @@ namespace OAuth.Sample.Api.Controllers
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class LineNotifyController : ControllerBase
+    public class LineNotifyController : CommonController
     {
         private readonly IOAuthService _oAuthService;
         private readonly IBaseService _baseService;
@@ -35,7 +35,8 @@ namespace OAuth.Sample.Api.Controllers
         [HttpPost("Subscribe")]
         public async Task<ActionResult> Subscribe(RequestLineNotify input)
         {
-            CheckUserExist(input);
+            if (!UserId.HasValue) throw new Exception("User Not Exist");
+            CheckUserExist(UserId.Value);
 
             var targetSetting = GetLineNotifySetting();
 
@@ -52,12 +53,14 @@ namespace OAuth.Sample.Api.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost("UnSubscribe")]
-        public async Task<ActionResult> UnSubscribe(RequestLineNotify input)
+        public async Task<ActionResult> UnSubscribe()
         {
+            if (!UserId.HasValue) throw new Exception("User Not Exist");
+
             var targetSetting = GetLineNotifySetting();
 
             var notify = _baseService.GetSingle<UserOAuthSetting>(x =>
-                x.UserId == input.UserId && x.ProviderType == ProviderType.LineNotify.ToString());
+                x.UserId == UserId.Value && x.ProviderType == ProviderType.LineNotify.ToString());
             if (notify == null) return NoContent();
 
             await _oAuthService.RevokeAsync(targetSetting, notify.Key);
@@ -89,13 +92,15 @@ namespace OAuth.Sample.Api.Controllers
 
         private async Task HandleUserSetting(RequestLineNotify input, string accessToken)
         {
+            if (!UserId.HasValue) throw new Exception("User Not Exist");
+
             var setting = _baseService.GetSingle<UserOAuthSetting>(x =>
-                x.UserId == input.UserId && x.ProviderType == ProviderType.LineNotify.ToString());
+                x.UserId == UserId.Value && x.ProviderType == ProviderType.LineNotify.ToString());
             if (setting == null)
             {
                 await _baseService.CreateAsync(new UserOAuthSetting()
                 {
-                    UserId = input.UserId,
+                    UserId = UserId.Value,
                     ProviderType = ProviderType.LineNotify.ToString(),
                     Key = accessToken
                 });
@@ -113,9 +118,9 @@ namespace OAuth.Sample.Api.Controllers
             if (targetSetting == null) throw new Exception($"{ProviderType.LineNotify} Setting Not Found");
             return targetSetting;
         }
-        private void CheckUserExist(RequestLineNotify input)
+        private void CheckUserExist(int userId)
         {
-            var user = _baseService.GetSingle<User>(x => x.Id == input.UserId);
+            var user = _baseService.GetSingle<User>(x => x.Id == userId);
             if (user == null) throw new Exception("User Not Found");
         }
     }

@@ -1,9 +1,7 @@
-﻿var token, userId;
+﻿var token;
 
 window.onload = function () {
     token = Cookies.get("JwtToken");
-    userId = Cookies.get("UserId");
-
     let url = new URL(this.location.href);
 
     if (url.searchParams.has('code') && url.searchParams.has('state')) {
@@ -18,15 +16,15 @@ window.onload = function () {
         let stateArr = state.split('_');
         switch (stateArr[0]) {
             case 'LineNotify':
-                SubscribeLineNotify(userId, url.searchParams.get('code'));
+                SubscribeLineNotify(url.searchParams.get('code'));
                 break;
         }
     }
 
-    GetUserData(userId);
+    GetUserData();
 }
 
-var GetUserData = function (userId) {
+var GetUserData = function () {
     let getUrl = `${settings.BaseDomainApiUrl}/User/GetSelf`;
     $.ajax({
         method: "GET",
@@ -39,6 +37,9 @@ var GetUserData = function (userId) {
             $('#PhotoUrl').attr('src', result.PhotoUrl);
             $('#Name').text(result.Name);
             $('#Description').text(result.Description);
+            $('#Email').text(result.Email);
+
+            handleFunctionBtn(result);
 
             $('#Loading').hide();
         },
@@ -46,6 +47,22 @@ var GetUserData = function (userId) {
             if (result.status === 401) window.location.href = "/";
         }
     });
+}
+
+var handleFunctionBtn = function (result) {
+    let hasLineNotify = result.UserOAuthData.findIndex(x => x.ProviderType == 'LineNotify');
+    if (hasLineNotify > -1) {
+        // 已訂閱
+        $('#SubscribeLineNotify').hide();
+        $('#SendMessage').show();
+        $('#UnSubscribeLineNotify').show();
+    }
+    else {
+        // 未訂閱
+        $('#SubscribeLineNotify').show();
+        $('#SendMessage').hide();
+        $('#UnSubscribeLineNotify').hide();
+    }
 }
 
 var UserLineNotifyAuth = function () {
@@ -62,9 +79,9 @@ var UserLineNotifyAuth = function () {
     window.location.href = authUrl;
 }
 
-var SubscribeLineNotify = function (userId, code) {
+var SubscribeLineNotify = function (code) {
     let postUrl = `${settings.BaseDomainApiUrl}/LineNotify/Subscribe`;
-    let postData = { UserId: userId, Code: code };
+    let postData = { Code: code };
 
     $.ajax({
         method: "POST",
@@ -93,8 +110,6 @@ var SubscribeLineNotify = function (userId, code) {
 
 var UnSubscribeLineNotify = function () {
     let postUrl = `${settings.BaseDomainApiUrl}/LineNotify/UnSubscribe`;
-    let postData = { UserId: userId };
-
     $.ajax({
         method: "POST",
         url: postUrl,
@@ -102,12 +117,13 @@ var UnSubscribeLineNotify = function () {
         headers: {
             'Authorization': `Bearer ${token}`
         },
-        data: JSON.stringify(postData),
         dataType: "text",
         success: function () {
             bootbox.alert({
                 message: "Line Notify取消訂閱成功"
             });
+
+            GetUserData();
         },
         error: function () {
             bootbox.alert({
@@ -160,6 +176,6 @@ var SendMessage = function (message) {
     });
 }
 
-var Logout = function() {
+var Logout = function () {
     window.location.href = "/";
 }

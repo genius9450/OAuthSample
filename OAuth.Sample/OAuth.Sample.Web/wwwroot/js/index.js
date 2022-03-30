@@ -84,12 +84,10 @@ var GetUserData = function (providerType, code) {
 }
 
 function SetLoginCookie(loginData) {
-    Cookies.set("UserId", loginData.UserId);
     Cookies.set("JwtToken", loginData.JwtToken); 
 }
 
 function RemoveLoginCookie() {
-    Cookies.remove('UserId');
     Cookies.remove('JwtToken');
     Cookies.remove('LoginState');
 }

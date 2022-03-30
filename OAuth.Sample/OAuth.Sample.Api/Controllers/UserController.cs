@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace OAuth.Sample.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : CommonController
     {
         private readonly IUserService _userService;
 
@@ -33,10 +34,8 @@ namespace OAuth.Sample.Api.Controllers
         [HttpGet("GetSelf")]
         public async Task<ActionResult<UserData>> GetSelf()
         {
-            var principal = HttpContext.User;
-            var userId = principal?.Claims?.SingleOrDefault(p => p.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-
-            return await _userService.GetUserAsync(int.Parse(userId));
+            if (!UserId.HasValue) throw new Exception("User Not Exist");
+            return await _userService.GetUserAsync(UserId.Value);
         }
 
     }

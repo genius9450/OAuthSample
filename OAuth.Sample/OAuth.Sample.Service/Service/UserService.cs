@@ -25,7 +25,7 @@ namespace OAuth.Sample.Service.Service
             _baseService = baseService;
             _configuration = configuration;
         }
-        
+
         public async Task<LoginResponse> LoginAsync(LoginRequest input)
         {
             var userOAuthSetting = _baseService.GetSingle<UserOAuthSetting>(x => x.ProviderType == input.ProviderType.ToString() && x.Key == input.Key);
@@ -45,12 +45,16 @@ namespace OAuth.Sample.Service.Service
             var user = _baseService.GetSingle<User>(x=> x.Id == userId);
             if (user == null) throw new Exception("User Not Found");
 
+            var userOAuthSettings = _baseService.GetList<UserOAuthSetting>(x => x.UserId == userId);
+
             return new UserData()
             {
                 UserId = user.Id,
                 Name = user.Name,
                 Description = user.Description,
-                PhotoUrl = user.PhotoUrl
+                Email = user.Email,
+                PhotoUrl = user.PhotoUrl,
+                UserOAuthData = userOAuthSettings.Select(x=> new UserOAuthData(){ Key = x.Key, ProviderType = x.ProviderType}).ToList()
             };
         }
 
