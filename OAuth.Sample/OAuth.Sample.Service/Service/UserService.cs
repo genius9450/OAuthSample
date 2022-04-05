@@ -5,11 +5,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using OAuth.Sample.Domain.Enum;
 using OAuth.Sample.Domain.Helper;
 using OAuth.Sample.Domain.Model.Line;
 using OAuth.Sample.Domain.Model.User;
+using OAuth.Sample.EF;
 using OAuth.Sample.EF.Entity;
 using OAuth.Sample.Service.Interface;
 
@@ -19,11 +22,13 @@ namespace OAuth.Sample.Service.Service
     {
         private readonly IBaseService _baseService;
         private readonly IConfiguration _configuration;
+        private readonly OAuthSampleDBContext _dbContext;
 
-        public UserService(IBaseService baseService, IConfiguration configuration)
+        public UserService(IBaseService baseService, IConfiguration configuration, OAuthSampleDBContext dbContext)
         {
             _baseService = baseService;
             _configuration = configuration;
+            _dbContext = dbContext;
         }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest input)
@@ -40,22 +45,44 @@ namespace OAuth.Sample.Service.Service
             };
         }
 
-        public async Task<UserData> GetUserAsync(int userId)
+        public async Task<SelfUserData> GetUserAsync(int userId)
         {
-            var user = _baseService.GetSingle<User>(x=> x.Id == userId);
-            if (user == null) throw new Exception("User Not Found");
+            var users = await GetUserWithOAuthSetting(userId);
+            if (!users.Any()) throw new Exception("User Not Found");
 
-            var userOAuthSettings = _baseService.GetList<UserOAuthSetting>(x => x.UserId == userId);
+            var user = users.FirstOrDefault();
+            return new SelfUserData()
+            {
+                UserId = user.Id,
+                Account = user.Account,
+                Name = user.Name,
+                Description = user.Description,
+                Email = user.Email,
+                PhotoUrl = user.PhotoUrl,
+                UserOAuthData = user.UserOAuthSettings.Select(x => new UserOAuthData() { ProviderType = x.ProviderType, ActiveDateTime = x.ActiveDateTime.ToString("yyyy/MM/dd HH:mm") }).ToList()
+            };
+        }
 
-            return new UserData()
+        public async Task<List<UserData>> GetUserListAsync()
+        {
+            var users = await GetUserWithOAuthSetting(null);
+            return users.Select(user => new UserData()
             {
                 UserId = user.Id,
                 Name = user.Name,
                 Description = user.Description,
                 Email = user.Email,
                 PhotoUrl = user.PhotoUrl,
-                UserOAuthData = userOAuthSettings.Select(x=> new UserOAuthData(){ Key = x.Key, ProviderType = x.ProviderType}).ToList()
-            };
+                UserOAuthData = user.UserOAuthSettings.Select(x => new UserOAuthData() { ProviderType = x.ProviderType, ActiveDateTime = x.ActiveDateTime.ToString("yyyy/MM/dd HH:mm") }).ToList()
+            }).ToList();
+        }
+
+        private async Task<List<User>> GetUserWithOAuthSetting(int? userId)
+        {
+            var query = _dbContext.GetDbSet<User>()
+                .Include(x => x.UserOAuthSettings)
+                .Where(x => !userId.HasValue || x.Id == userId.Value);
+            return await query.ToListAsync();
         }
 
         private async Task<User> CreteUserAsync(LoginRequest input)
@@ -66,14 +93,19 @@ namespace OAuth.Sample.Service.Service
                 PhotoUrl = input.PhotoUrl,
                 Email = input.Email,
                 Description = input.Description,
+                Password = "********",
                 UserOAuthSettings = new List<UserOAuthSetting>()
                 {
                     new UserOAuthSetting()
                     {
+                        AccessToken = input.AccessToken,
                         ProviderType = input.ProviderType.ToString(),
-                        Key = input.Key
+                        Key = input.Key,
+                        CreateDateTime = DateTime.Now,
+                        ActiveDateTime = DateTime.Now
                     }
-                }
+                },
+                CreateDateTime = DateTime.Now
             });
             return user;
         }
@@ -83,10 +115,7 @@ namespace OAuth.Sample.Service.Service
             var user = _baseService.GetSingle<User>(x => x.Id == userOAuthSetting.UserId);
             if (user == null) throw new Exception("User Not Found");
 
-            user.Name = input.Name;
-            user.Email = input.Email;
             user.PhotoUrl = input.PhotoUrl;
-            user.Description = input.Description;
             await _baseService.UpdateAsync(user);
             return user;
         }
@@ -128,5 +157,67 @@ namespace OAuth.Sample.Service.Service
             return serializeToken;
         }
 
+        public async Task UserOAuthLoginConnectAsync(int userId, ProviderType providerType, string userKey,
+            string accessToken)
+        {
+            var user = _baseService.GetSingle<User>(x => x.Id == userId);
+            if (user == null)
+            {
+                throw new Exception("User Not Found");
+            }
+
+            var userOAuthSettings = _baseService.GetList<UserOAuthSetting>(x =>
+                x.Key == userKey && x.ProviderType == providerType.ToString());
+            if (userOAuthSettings.Any(x => x.UserId != userId))
+            {
+                throw new Exception($"此{providerType.Description()}帳號，已被其他使用者綁定");
+            }
+
+            var existOAuthSetting = userOAuthSettings.SingleOrDefault(x => x.UserId == userId);
+            if (existOAuthSetting != null)
+            {
+                // 已綁定，僅更新異動時間
+                existOAuthSetting.ModifyDateTime = DateTime.Now;
+                existOAuthSetting.Key = userKey;
+                existOAuthSetting.AccessToken = accessToken;
+                await _baseService.UpdateAsync(existOAuthSetting);
+                return;
+            }
+
+
+            // 未綁定，綁定此OAuth Login設定
+            await _baseService.CreateAsync<UserOAuthSetting>(new UserOAuthSetting()
+            {
+                UserId = userId,
+                CreateDateTime = DateTime.Now,
+                Key = userKey,
+                AccessToken = accessToken,
+                ProviderType = providerType.ToString(),
+                ActiveDateTime = DateTime.Now
+            });
+
+        }
+
+        public async Task UpdateUserAsync(int userId, RequestUpdateUser input)
+        {
+            var user = _baseService.GetSingle<User>(x => x.Id == userId);
+            if (user == null) throw new Exception("User Not Found");
+
+            if (!string.IsNullOrWhiteSpace(input.Account))
+            {
+                var theSameAccount = _baseService.GetList<User>(x => x.Account == input.Account && x.Id != userId);
+                if (theSameAccount.Any())
+                {
+                    throw new Exception("此登入帳號已被註冊");
+                }
+            }
+
+            user.Name = input.Name;
+            user.Account = input.Account;
+            user.Email = input.Email;
+            user.Description = input.Description;
+            if (input.Password != "********") user.Password = input.Password;
+            await _baseService.UpdateAsync(user);
+        }
     }
 }

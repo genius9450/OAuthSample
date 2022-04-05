@@ -32,11 +32,12 @@ namespace OAuth.Sample.Service.Service
         public async Task<UserProfileData> GetProfileAsync(string accessToken)
         {
             var result = await HttpClientHelper.GetAsync<object>("https://www.googleapis.com/drive/v2/files", new { access_token = accessToken });
-            if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Google Get GetProfile Failed");
+            if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Google Get Profile Failed");
 
             // TODO: 403 Forbidden
             return new UserProfileData()
             {
+                AccessToken = accessToken,
                 //Name = result.Data.name,
                 //PhotoUrl = result.Data.picture?.data?.url,
                 //Description = result.Data.email,
@@ -44,7 +45,7 @@ namespace OAuth.Sample.Service.Service
             };
         }
 
-        public Task RevokeAsync(string accessToken)
+        public Task RevokeAsync(OAuthSetting setting, string accessToken)
         {
             throw new NotImplementedException();
         }

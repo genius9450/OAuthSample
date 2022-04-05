@@ -16,6 +16,8 @@ namespace OAuth.Sample.Web.Pages
         public string ClientSecret { get; set; }
 
         public string RedirectUri { get; set; }
+
+        public string ConnectRedirectUri { get; set; }
     }
     public class ProfileModel : PageModel
     {

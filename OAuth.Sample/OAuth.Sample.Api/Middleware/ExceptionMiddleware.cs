@@ -53,11 +53,12 @@ namespace OAuth.Sample.Api.Middleware
         /// <returns></returns>
         private Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-#if DEBUG
+            //#if DEBUG
+            //            string message = ex.Message;
+            //#else
+            //            string message = "InternalServerError";
+            //#endif
             string message = ex.Message;
-#else
-            string message = "InternalServerError";
-#endif
 
             var result = JsonConvert.SerializeObject(new ResponseModel<object>() { Msg = message, StatusCode = ResponseStatusCode.Fail.ToInt() });
             context.Response.ContentType = "application/json";

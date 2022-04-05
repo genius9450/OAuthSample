@@ -91,3 +91,29 @@ function RemoveLoginCookie() {
     Cookies.remove('JwtToken');
     Cookies.remove('LoginState');
 }
+
+var Login = function() {
+    let postUrl = `${settings.BaseDomainApiUrl}/Login`;
+    let postData = { Account: $('#Account').val(), Password: $('#Password').val() };
+
+    $('#Loading').show();
+    $.ajax({
+        method: "POST",
+        url: postUrl,
+        contentType: "application/json",
+        data: JSON.stringify(postData),
+        dataType: "json",
+        success: function (result) {
+            SetLoginCookie(result);
+            window.location.href = '../Profile';
+            $('#Loading').hide();
+        },
+        error: function () {
+            bootbox.alert({
+                message: "帳號或密碼錯誤"
+            });
+
+            $('#Loading').hide();
+        }
+    });
+}

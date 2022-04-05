@@ -63,14 +63,14 @@ namespace OAuth.Sample.Api.Controllers
                 x.UserId == UserId.Value && x.ProviderType == ProviderType.LineNotify.ToString());
             if (notify == null) return NoContent();
 
-            await _oAuthService.RevokeAsync(targetSetting, notify.Key);
+            await _oAuthService.RevokeAsync(targetSetting, notify.AccessToken, notify.Key);
             await _baseService.DeleteAsync<UserOAuthSetting>(notify.Id);
 
             return Ok();
         }
 
         /// <summary>
-        /// 群組發送通知
+        /// 發送通知(群發 || 私訊)
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
@@ -78,7 +78,7 @@ namespace OAuth.Sample.Api.Controllers
         public async Task<ActionResult> Notify(RequestSendMessage input)
         {
             var notifies = _baseService.GetList<UserOAuthSetting>(x =>
-                x.ProviderType == ProviderType.LineNotify.ToString());
+                x.ProviderType == ProviderType.LineNotify.ToString() && (!input.UserId.HasValue || x.UserId == input.UserId.Value) );
             if (!notifies.Any()) return NoContent();
 
             foreach (var notify in notifies)
@@ -102,7 +102,10 @@ namespace OAuth.Sample.Api.Controllers
                 {
                     UserId = UserId.Value,
                     ProviderType = ProviderType.LineNotify.ToString(),
-                    Key = accessToken
+                    AccessToken = accessToken,
+                    Key = accessToken,
+                    CreateDateTime = DateTime.Now,
+                    ActiveDateTime = DateTime.Now
                 });
             }
             else

@@ -34,7 +34,7 @@ namespace OAuth.Sample.Service.Service
             throw new NotImplementedException();
         }
 
-        public async Task RevokeAsync(string accessToken)
+        public async Task RevokeAsync(OAuthSetting setting, string accessToken)
         {
             var result = await HttpClientHelper.PostAsync<object>("https://notify-api.line.me/api/revoke", null,
                 customHeader: new Dictionary<string, string>() { { "Authorization", $"Bearer {accessToken}" } });

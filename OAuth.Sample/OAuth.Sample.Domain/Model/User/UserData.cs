@@ -20,6 +20,11 @@ namespace OAuth.Sample.Domain.Model.User
 
     }
 
+    public class SelfUserData: UserData
+    {
+        public string Account { get; set; }
+    }
+
     public class UserOAuthData
     {
         /// <summary>
@@ -32,13 +37,9 @@ namespace OAuth.Sample.Domain.Model.User
         public string ProviderType { get; set; }
 
         /// <summary>
-        /// 識別值
+        /// 啟用時間
         /// </summary>
-        /// <remarks>
-        /// Line Login: userId
-        /// Line Notify: access_token
-        /// </remarks>
-        public string Key { get; set; }
+        public string ActiveDateTime { get; set; }
 
     }
 }

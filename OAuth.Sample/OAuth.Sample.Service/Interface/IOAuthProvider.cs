@@ -12,6 +12,6 @@ namespace OAuth.Sample.Service.Interface
 
         Task<UserProfileData> GetProfileAsync(string accessToken);
 
-        Task RevokeAsync(string accessToken);
+        Task RevokeAsync(OAuthSetting setting, string accessToken);
     }
 }

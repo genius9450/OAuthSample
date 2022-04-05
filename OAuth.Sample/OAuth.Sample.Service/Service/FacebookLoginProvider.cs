@@ -36,10 +36,11 @@ namespace OAuth.Sample.Service.Service
                 fields = "id,email,name,picture"
             };
             var result = await HttpClientHelper.GetAsync<ResponseFacebookProfile>("https://graph.facebook.com/v13.0/me", request);
-            if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Facebook Get GetProfile Failed");
+            if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Facebook Get Profile Failed");
 
             return new UserProfileData()
             {
+                AccessToken = accessToken,
                 Name = result.Data.name,
                 PhotoUrl = result.Data.picture?.data?.url,
                 Email = result.Data.email,
@@ -47,9 +48,10 @@ namespace OAuth.Sample.Service.Service
             };
         }
 
-        public Task RevokeAsync(string accessToken)
+        public async Task RevokeAsync(OAuthSetting setting, string accessToken)
         {
-            throw new NotImplementedException();
+            var result = await HttpClientHelper.DeleteAsync<ResponseFacebookProfile>("https://graph.facebook.com/v13.0/me/permissions", null, customHeader: new Dictionary<string, string>() { { "Authorization", $"Bearer {accessToken}" } });
+            if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Facebook Revoke Failed");
         }
     }
 }

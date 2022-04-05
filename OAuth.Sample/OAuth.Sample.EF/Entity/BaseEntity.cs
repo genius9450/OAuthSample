@@ -17,7 +17,7 @@ namespace OAuth.Sample.EF.Entity
         /// <summary>
         /// 建立時間
         /// </summary>
-        public DateTime CreateDateTime { get; set; } = DateTime.Now;
+        public DateTime CreateDateTime { get; set; } 
 
         /// <summary>
         /// 異動時間

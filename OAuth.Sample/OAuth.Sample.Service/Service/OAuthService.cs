@@ -21,10 +21,10 @@ namespace OAuth.Sample.Service.Service
             return await provider.GetTokenAsync(setting, code);
         }
 
-        public async Task RevokeAsync(OAuthSetting setting, string accessToken)
+        public async Task RevokeAsync(OAuthSetting setting, string accessToken, string key)
         {
             var provider = GetProvider(setting);
-            await provider.RevokeAsync(accessToken);
+            await provider.RevokeAsync(setting, accessToken);
         }
 
         public async Task<UserProfileData> GetProfileAsync(OAuthSetting setting, string code)
@@ -54,6 +54,7 @@ namespace OAuth.Sample.Service.Service
 
     public class UserProfileData
     {
+        public string AccessToken { get; set; }
         public string UserKey { get; set; }
         public string Name { get; set; }
         public string PhotoUrl { get; set; }

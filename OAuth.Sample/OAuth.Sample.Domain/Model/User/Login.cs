@@ -6,6 +6,7 @@ namespace OAuth.Sample.Domain.Model.User
     public class LoginRequest
     {
         public ProviderType ProviderType { get; set; }
+        public string AccessToken { get; set; }
         public string Key { get; set; }
         public string Name { get; set; }
         public string PhotoUrl { get; set; }

@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OAuth.Sample.EF;
 
 namespace OAuth.Sample.EF.Migrations
 {
     [DbContext(typeof(OAuthSampleDBContext))]
-    partial class OAuthSampleDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220405031158_Add User Account")]
+    partial class AddUserAccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

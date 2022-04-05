@@ -36,6 +36,7 @@ namespace OAuth.Sample.Service.Service
 
             return new UserProfileData()
             {
+                AccessToken = accessToken,
                 Name = result.Data.displayName,
                 PhotoUrl = result.Data.pictureUrl,
                 Description = result.Data.statusMessage,
@@ -43,9 +44,16 @@ namespace OAuth.Sample.Service.Service
             };
         }
 
-        public Task RevokeAsync(string accessToken)
+        public async Task RevokeAsync(OAuthSetting setting, string accessToken)
         {
-            throw new NotImplementedException();
+            var request = new
+            {
+                access_token = accessToken,
+                client_id = setting.ClientId,
+                client_secret = setting.ClientSecret
+            };
+            var result = await HttpClientHelper.PostAsync<object>("https://api.line.me/oauth2/v2.1/revoke", request);
+            if (result.StatusCode != HttpStatusCode.OK.ToInt()) throw new Exception("Line Revoke Failed");
         }
     }
 }

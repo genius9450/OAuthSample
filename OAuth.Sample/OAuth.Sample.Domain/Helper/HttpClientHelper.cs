@@ -159,6 +159,78 @@ namespace OAuth.Sample.Domain.Helper
         }
 
         /// <summary>
+        /// 呼叫API
+        /// </summary>
+        /// <typeparam name="TResponse"></typeparam>
+        /// <param name="url"></param>
+        /// <param name="data"></param>
+        /// <param name="mediaType"></param>
+        /// <returns></returns>
+        public static async Task<ResponseModel<TResponse>> DeleteAsync<TResponse>(string url, object data, string mediaType = "application/x-www-form-urlencoded", Dictionary<string, string> customHeader = null)
+        {
+            var result = new ResponseModel<TResponse>();
+            var postData = string.Empty;
+            try
+            {
+                HttpClient client = new HttpClient();
+
+                if (mediaType == "application/x-www-form-urlencoded")
+                    postData = GetQueryString(data);
+                else
+                    postData = JsonConvert.SerializeObject(data);
+
+                StringContent content = new StringContent(postData, Encoding.UTF8, mediaType);
+
+                HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Delete, url)
+                {
+                    Content = content
+                };
+
+                // 客製化Header
+                if (customHeader != null && customHeader.Any())
+                {
+                    foreach (var h in customHeader)
+                    {
+                        requestMessage.Headers.Add(h.Key, h.Value);
+                    }
+                }
+
+                HttpResponseMessage response = await client.SendAsync(requestMessage);
+
+                if (response.StatusCode.ToString() == HttpStatusCode.OK.ToString())
+                {
+                    result = new ResponseModel<TResponse>()
+                    {
+                        StatusCode = HttpStatusCode.OK.ToInt(),
+                        Msg = HttpStatusCode.OK.Description(),
+                        Data = JsonConvert.DeserializeObject<TResponse>(response.Content.ReadAsStringAsync().Result)
+                    };
+                }
+                else
+                {
+                    result = new ResponseModel<TResponse>()
+                    {
+                        StatusCode = response.StatusCode.ToInt(),
+                        Msg = response.StatusCode.Description()
+                    };
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "{HttpMethod} / {FullPath} / {MediaType} / {Request} / {Response}", "DELETE", url, mediaType, postData, JsonConvert.SerializeObject(result));
+                throw ex;
+            }
+            finally
+            {
+                Logger.LogInformation("{HttpMethod} / {FullPath} / {MediaType} / {Request} / {Response}", "DELETE", url, mediaType, postData, JsonConvert.SerializeObject(result));
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
         /// 取得Object query string
         /// </summary>
         /// <param name="obj"></param>

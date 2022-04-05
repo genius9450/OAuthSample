@@ -27,15 +27,24 @@ namespace OAuth.Sample.EF.Entity
         [StringLength(20)]
         public string ProviderType { get; set; }
 
+        public string AccessToken { get; set; }
+
         /// <summary>
         /// 識別值
         /// </summary>
         /// <remarks>
         /// Line Login: userId
+        /// Facebook Login: userId
         /// Line Notify: access_token
         /// </remarks>
         [Required]
         public string Key { get; set; }
+
+        /// <summary>
+        /// 啟用時間
+        /// </summary>
+        [Required]
+        public DateTime ActiveDateTime { get; set; }
 
     }
 }

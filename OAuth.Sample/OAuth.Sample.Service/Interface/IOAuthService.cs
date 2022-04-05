@@ -12,6 +12,6 @@ namespace OAuth.Sample.Service.Interface
 
         Task<string> GetAccessTokenAsync(OAuthSetting setting, string code);
 
-        Task RevokeAsync(OAuthSetting setting, string accessToken);
+        Task RevokeAsync(OAuthSetting setting, string accessToken, string key);
     }
 }
